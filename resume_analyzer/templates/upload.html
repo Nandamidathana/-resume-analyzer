@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Resume — ResumeIQ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="nav-brand">Resume<span>IQ</span></a>
+  <a href="/" class="nav-back">← Back to Home</a>
+</nav>
+
+<div class="upload-page">
+  <div class="upload-container">
+
+    <!-- ── Header ──────────────────────────────────────────────────── -->
+    <div class="upload-header">
+      <div class="section-tag">Step 1 of 2</div>
+      <h1>Analyze Your Resume</h1>
+      <p>Upload your PDF and paste the job description to get your match score.</p>
+    </div>
+
+    <!-- ── Error Message ───────────────────────────────────────────── -->
+    {% if error %}
+    <div class="alert-error">
+      <span class="alert-icon">⚠️</span>
+      <span>{{ error }}</span>
+    </div>
+    {% endif %}
+
+    <!-- ── Form ────────────────────────────────────────────────────── -->
+    <form method="POST" enctype="multipart/form-data" id="analyzeForm">
+
+      <!-- Resume Upload -->
+      <div class="form-section">
+        <label class="form-label">
+          <span class="label-icon">📄</span>
+          Resume (PDF)
+        </label>
+        <div class="dropzone" id="dropzone">
+          <input type="file" name="resume" id="resumeInput" accept=".pdf" required hidden>
+          <div class="dropzone-inner" id="dropzoneInner">
+            <div class="dz-icon">☁</div>
+            <div class="dz-text">
+              <strong>Drop your PDF here</strong> or
+              <button type="button" class="dz-browse" onclick="document.getElementById('resumeInput').click()">browse</button>
+            </div>
+            <div class="dz-hint">PDF files only · Max 5MB</div>
+          </div>
+          <div class="dz-selected" id="dzSelected" style="display:none">
+            <div class="dz-file-icon">📃</div>
+            <div class="dz-file-info">
+              <strong id="dzFileName">—</strong>
+              <span id="dzFileSize">—</span>
+            </div>
+            <button type="button" class="dz-remove" id="dzRemove">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Job Description -->
+      <div class="form-section">
+        <label class="form-label" for="job_description">
+          <span class="label-icon">💼</span>
+          Job Description
+        </label>
+        <textarea
+          name="job_description"
+          id="job_description"
+          class="jd-textarea"
+          placeholder="Paste the full job description here...
+
+We're looking for a Senior Python Developer with experience in:
+• 5+ years of Python development
+• Machine Learning and Data Science
+• Django/Flask frameworks
+• AWS or GCP cloud platforms
+• Strong communication skills..."
+          required
+          minlength="50"
+        >{{ request.form.get('job_description', '') }}</textarea>
+        <div class="char-count">
+          <span id="charCount">0</span> characters
+          <span class="char-hint">(minimum 50)</span>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-primary btn-submit" id="submitBtn">
+        <span class="btn-text">Analyze Resume ⚡</span>
+        <span class="btn-loading" style="display:none">
+          <span class="spinner"></span> Analyzing…
+        </span>
+      </button>
+
+    </form>
+
+    <!-- Tips -->
+    <div class="tips-row">
+      <div class="tip">✓ Text-based PDFs work best</div>
+      <div class="tip">✓ Use the complete job posting</div>
+      <div class="tip">✓ Results in under 5 seconds</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── File Drop / Browse ─────────────────────────────────────────────────
+const input     = document.getElementById('resumeInput');
+const dropzone  = document.getElementById('dropzone');
+const inner     = document.getElementById('dropzoneInner');
+const selected  = document.getElementById('dzSelected');
+const nameEl    = document.getElementById('dzFileName');
+const sizeEl    = document.getElementById('dzFileSize');
+const removeBtn = document.getElementById('dzRemove');
+
+function showFile(file) {
+  nameEl.textContent = file.name;
+  sizeEl.textContent = (file.size / 1024).toFixed(1) + ' KB';
+  inner.style.display    = 'none';
+  selected.style.display = 'flex';
+  dropzone.classList.add('has-file');
+}
+
+function clearFile() {
+  input.value = '';
+  inner.style.display    = 'flex';
+  selected.style.display = 'none';
+  dropzone.classList.remove('has-file');
+}
+
+input.addEventListener('change', () => { if (input.files[0]) showFile(input.files[0]); });
+removeBtn.addEventListener('click', clearFile);
+
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', ()  => dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.endsWith('.pdf')) {
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    input.files = dt.files;
+    showFile(file);
+  }
+});
+
+// ── Char Counter ──────────────────────────────────────────────────────
+const jd    = document.getElementById('job_description');
+const count = document.getElementById('charCount');
+function updateCount() { count.textContent = jd.value.length; }
+jd.addEventListener('input', updateCount);
+updateCount();
+
+// ── Loading State on Submit ───────────────────────────────────────────
+document.getElementById('analyzeForm').addEventListener('submit', () => {
+  const btn = document.getElementById('submitBtn');
+  btn.querySelector('.btn-text').style.display    = 'none';
+  btn.querySelector('.btn-loading').style.display = 'flex';
+  btn.disabled = true;
+});
+</script>
+
+</body>
+</html>

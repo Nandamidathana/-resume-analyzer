@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Results — ResumeIQ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="nav-brand">Resume<span>IQ</span></a>
+  <a href="/upload" class="nav-cta">Analyze Another →</a>
+</nav>
+
+<div class="results-page">
+  <div class="results-container">
+
+    <!-- ── Score Hero ──────────────────────────────────────────────── -->
+    <div class="score-hero {{ score_class }}">
+      <div class="score-hero-bg"></div>
+      <div class="score-hero-content">
+
+        <div class="score-gauge-wrap">
+          <svg class="score-gauge" viewBox="0 0 200 200">
+            <!-- Track -->
+            <circle cx="100" cy="100" r="80" class="gauge-track"/>
+            <!-- Fill — stroke-dasharray=502 (circumference), offset calculated in JS -->
+            <circle cx="100" cy="100" r="80" class="gauge-fill"
+              id="gaugeFill"
+              stroke-dasharray="502"
+              stroke-dashoffset="502"
+              data-score="{{ score }}"/>
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-score" id="gaugeScore">0%</div>
+            <div class="gauge-sublabel">Match</div>
+          </div>
+        </div>
+
+        <div class="score-details">
+          <div class="score-badge {{ score_class }}">
+            {{ score_emoji }} {{ score_label }}
+          </div>
+          <h1 class="score-headline">
+            Your resume matches
+            <strong>{{ score }}%</strong>
+            with this role
+          </h1>
+          <div class="score-meta-row">
+            <div class="meta-item">
+              <span class="meta-val">{{ resume_word_count }}</span>
+              <span class="meta-key">resume words</span>
+            </div>
+            <div class="meta-divider"></div>
+            <div class="meta-item">
+              <span class="meta-val">{{ resume_skills | length }}</span>
+              <span class="meta-key">skills found</span>
+            </div>
+            <div class="meta-divider"></div>
+            <div class="meta-item">
+              <span class="meta-val">{{ missing_skills | length }}</span>
+              <span class="meta-key">skills missing</span>
+            </div>
+          </div>
+          <div class="analyzed-file">📄 {{ resume_name }}</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Grid Layout ─────────────────────────────────────────────── -->
+    <div class="results-grid">
+
+      <!-- Matching Skills -->
+      <div class="result-card card-match">
+        <div class="card-header">
+          <div class="card-icon">✅</div>
+          <div>
+            <h3>Matching Skills</h3>
+            <p>Found in both your resume and the job description</p>
+          </div>
+          <div class="card-count match-count">{{ matching_skills | length }}</div>
+        </div>
+        <div class="skills-cloud">
+          {% if matching_skills %}
+            {% for skill in matching_skills %}
+            <span class="skill-tag skill-match">{{ skill }}</span>
+            {% endfor %}
+          {% else %}
+            <p class="no-skills">No matching skills found. Try updating your resume with relevant keywords.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Missing Skills -->
+      <div class="result-card card-missing">
+        <div class="card-header">
+          <div class="card-icon">❌</div>
+          <div>
+            <h3>Missing Skills</h3>
+            <p>Required by the job but absent from your resume</p>
+          </div>
+          <div class="card-count missing-count">{{ missing_skills | length }}</div>
+        </div>
+        <div class="skills-cloud">
+          {% if missing_skills %}
+            {% for skill in missing_skills %}
+            <span class="skill-tag skill-missing">{{ skill }}</span>
+            {% endfor %}
+          {% else %}
+            <p class="no-skills no-skills-good">🎉 Great news! No critical skill gaps detected.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Your Skills -->
+      <div class="result-card card-yours">
+        <div class="card-header">
+          <div class="card-icon">👤</div>
+          <div>
+            <h3>Your Skills</h3>
+            <p>All skills detected in your resume</p>
+          </div>
+          <div class="card-count yours-count">{{ resume_skills | length }}</div>
+        </div>
+        <div class="skills-cloud">
+          {% if resume_skills %}
+            {% for skill in resume_skills %}
+              {% if skill in matching_skills %}
+              <span class="skill-tag skill-match-light">{{ skill }}</span>
+              {% else %}
+              <span class="skill-tag skill-neutral">{{ skill }}</span>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <p class="no-skills">No recognizable skills detected. Ensure your resume lists technical skills clearly.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Suggestions -->
+      <div class="result-card card-suggestions">
+        <div class="card-header">
+          <div class="card-icon">💡</div>
+          <div>
+            <h3>Improvement Suggestions</h3>
+            <p>Actionable steps to boost your match score</p>
+          </div>
+        </div>
+        <div class="suggestions-list">
+          {% for s in suggestions %}
+          <div class="suggestion-item suggestion-{{ s.type }}">
+            <div class="sug-icon">{{ s.icon }}</div>
+            <div class="sug-body">
+              <strong>{{ s.title }}</strong>
+              <p>{{ s.detail }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Bottom Actions ──────────────────────────────────────────── -->
+    <div class="results-actions">
+      <a href="/upload" class="btn-primary">Analyze Another Resume</a>
+      <button class="btn-secondary" onclick="window.print()">🖨️ Print Results</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Animated Score Ring ──────────────────────────────────────────────────
+const fill  = document.getElementById('gaugeFill');
+const label = document.getElementById('gaugeScore');
+const score = parseFloat(fill.dataset.score);
+const circumference = 502;
+
+// Animate from 0 → score
+let current = 0;
+const duration = 1200; // ms
+const start = performance.now();
+
+function animate(now) {
+  const elapsed = now - start;
+  const progress = Math.min(elapsed / duration, 1);
+  // Ease-out cubic
+  const ease = 1 - Math.pow(1 - progress, 3);
+  current = score * ease;
+
+  const offset = circumference - (current / 100) * circumference;
+  fill.style.strokeDashoffset = offset;
+  label.textContent = Math.round(current) + '%';
+
+  if (progress < 1) requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+</script>
+
+</body>
+</html>

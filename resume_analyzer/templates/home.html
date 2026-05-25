@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ResumeIQ — AI-Powered Resume Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="nav-brand">Resume<span>IQ</span></div>
+  <a href="/upload" class="nav-cta">Analyze Resume →</a>
+</nav>
+
+<!-- ── HERO ────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-badge">✦ AI-Powered Analysis</div>
+    <h1 class="hero-title">
+      Know exactly how your<br>
+      <span class="gradient-text">resume stacks up</span>
+    </h1>
+    <p class="hero-sub">
+      Upload your resume, paste a job description — get a match score,
+      missing skills, and actionable improvements in seconds.
+    </p>
+    <div class="hero-actions">
+      <a href="/upload" class="btn-primary">Start Analyzing Free</a>
+      <div class="hero-stat">
+        <span class="stat-num">3</span>
+        <span class="stat-label">steps to your score</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-card-float">
+    <div class="score-preview">
+      <div class="score-ring">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" class="ring-bg"/>
+          <circle cx="60" cy="60" r="50" class="ring-fill" stroke-dasharray="251" stroke-dashoffset="55"/>
+        </svg>
+        <div class="score-text">78%</div>
+      </div>
+      <div class="score-label-text">Match Score</div>
+    </div>
+    <div class="mini-skills">
+      <div class="skill-chip match">✓ Python</div>
+      <div class="skill-chip match">✓ Machine Learning</div>
+      <div class="skill-chip miss">✗ Docker</div>
+      <div class="skill-chip miss">✗ Kubernetes</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ─────────────────────────────────────────────────── -->
+<section class="how-section">
+  <div class="section-container">
+    <div class="section-tag">How it works</div>
+    <h2 class="section-title">Three steps to clarity</h2>
+
+    <div class="steps-grid">
+      <div class="step-card" style="--delay:0s">
+        <div class="step-num">01</div>
+        <div class="step-icon">📄</div>
+        <h3>Upload Resume</h3>
+        <p>Upload your PDF resume. We extract all text automatically using advanced PDF parsing.</p>
+      </div>
+      <div class="step-card" style="--delay:.1s">
+        <div class="step-num">02</div>
+        <div class="step-icon">📋</div>
+        <h3>Paste Job Description</h3>
+        <p>Copy-paste the full job description. The more detail, the more accurate your analysis.</p>
+      </div>
+      <div class="step-card" style="--delay:.2s">
+        <div class="step-num">03</div>
+        <div class="step-icon">⚡</div>
+        <h3>Get Insights</h3>
+        <p>Receive your match score, extracted skills, gaps, and tailored suggestions instantly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ─────────────────────────────────────────────────────── -->
+<section class="features-section">
+  <div class="section-container">
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🎯</div>
+        <h4>TF-IDF Match Score</h4>
+        <p>Cosine similarity analysis gives you a precise percentage match between your resume and the role.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔍</div>
+        <h4>Skill Gap Analysis</h4>
+        <p>We identify 100+ technical and soft skills, showing exactly what's missing from your application.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">💡</div>
+        <h4>Smart Suggestions</h4>
+        <p>Actionable recommendations to optimize keywords, add impact metrics, and beat ATS systems.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔒</div>
+        <h4>Private & Secure</h4>
+        <p>Your resume never leaves the server. Files are processed locally and not stored permanently.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ──────────────────────────────────────────────────────────── -->
+<section class="cta-section">
+  <div class="section-container">
+    <div class="cta-box">
+      <h2>Ready to land that interview?</h2>
+      <p>Analyze your resume against any job posting in under 30 seconds.</p>
+      <a href="/upload" class="btn-primary btn-lg">Analyze My Resume →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="nav-brand">Resume<span>IQ</span></div>
+  <p>Built with Python, Flask, and NLP techniques · Open Source</p>
+</footer>
+
+</body>
+</html>
